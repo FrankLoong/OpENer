@@ -29,15 +29,15 @@ IApp_Init(void)
   /* create 3 assembly object instances*/
   /*INPUT*/
   createAssemblyObject(DEMO_APP_INPUT_ASSEMBLY_NUM, &g_assemblydata064[0],
-      sizeof(g_assemblydata064));
+                       sizeof(g_assemblydata064));
 
   /*OUTPUT*/
   createAssemblyObject(DEMO_APP_OUTPUT_ASSEMBLY_NUM, &g_assemblydata096[0],
-      sizeof(g_assemblydata096));
+                       sizeof(g_assemblydata096));
 
   /*CONFIG*/
   createAssemblyObject(DEMO_APP_CONFIG_ASSEMBLY_NUM, &g_assemblydata097[0],
-      sizeof(g_assemblydata097));
+                       sizeof(g_assemblydata097));
 
   /*Heart-beat output assembly for Input only connections */
   createAssemblyObject(DEMO_APP_HEARBEAT_INPUT_ONLY_ASSEMBLY_NUM, 0, 0);
@@ -47,16 +47,16 @@ IApp_Init(void)
 
   /* assembly for explicit messaging */
   createAssemblyObject(DEMO_APP_EXPLICT_ASSEMBLY_NUM, &g_assemblydata09A[0],
-      sizeof(g_assemblydata09A));
+                       sizeof(g_assemblydata09A));
 
   configureExclusiveOwnerConnectionPoint(0, DEMO_APP_OUTPUT_ASSEMBLY_NUM,
-      DEMO_APP_INPUT_ASSEMBLY_NUM, DEMO_APP_CONFIG_ASSEMBLY_NUM);
+                                         DEMO_APP_INPUT_ASSEMBLY_NUM, DEMO_APP_CONFIG_ASSEMBLY_NUM);
   configureInputOnlyConnectionPoint(0,
-      DEMO_APP_HEARBEAT_INPUT_ONLY_ASSEMBLY_NUM, DEMO_APP_INPUT_ASSEMBLY_NUM,
-      DEMO_APP_CONFIG_ASSEMBLY_NUM);
+                                    DEMO_APP_HEARBEAT_INPUT_ONLY_ASSEMBLY_NUM, DEMO_APP_INPUT_ASSEMBLY_NUM,
+                                    DEMO_APP_CONFIG_ASSEMBLY_NUM);
   configureListenOnlyConnectionPoint(0,
-      DEMO_APP_HEARBEAT_LISTEN_ONLY_ASSEMBLY_NUM, DEMO_APP_INPUT_ASSEMBLY_NUM,
-      DEMO_APP_CONFIG_ASSEMBLY_NUM);
+                                     DEMO_APP_HEARBEAT_LISTEN_ONLY_ASSEMBLY_NUM, DEMO_APP_INPUT_ASSEMBLY_NUM,
+                                     DEMO_APP_CONFIG_ASSEMBLY_NUM);
 
   return EIP_OK;
 }
@@ -69,7 +69,7 @@ IApp_HandleApplication(void)
 
 void
 IApp_IOConnectionEvent(unsigned int pa_unOutputAssembly,
-    unsigned int pa_unInputAssembly, EIOConnectionEvent pa_eIOConnectionEvent)
+                       unsigned int pa_unInputAssembly, EIOConnectionEvent pa_eIOConnectionEvent)
 {
   /* maintain a correct output state according to the connection state*/
 
@@ -79,37 +79,37 @@ IApp_IOConnectionEvent(unsigned int pa_unOutputAssembly,
 }
 
 EIP_STATUS
-IApp_AfterAssemblyDataReceived(S_CIP_Instance *pa_pstInstance)
+IApp_AfterAssemblyDataReceived(S_CIP_Instance * pa_pstInstance)
 {
   EIP_STATUS nRetVal = EIP_OK;
 
   /*handle the data received e.g., update outputs of the device */
-  switch (pa_pstInstance->nInstanceNr)
+  switch(pa_pstInstance->nInstanceNr)
     {
-  case DEMO_APP_OUTPUT_ASSEMBLY_NUM:
-    /* Data for the output assembly has been received.
-     * Mirror it to the inputs */
-    memcpy(&g_assemblydata064[0], &g_assemblydata096[0],
-        sizeof(g_assemblydata064));
-    break;
-  case DEMO_APP_EXPLICT_ASSEMBLY_NUM:
-    /* do something interesting with the new data from
-     * the explicit set-data-attribute message */
-    break;
-  case DEMO_APP_CONFIG_ASSEMBLY_NUM:
-    /* Add here code to handle configuration data and check if it is ok
-     * The demo application does not handle config data.
-     * However in order to pass the test we accept any data given.
-     * EIP_ERROR
-     */
-    nRetVal = EIP_OK;
-    break;
+    case DEMO_APP_OUTPUT_ASSEMBLY_NUM:
+      /* Data for the output assembly has been received.
+       * Mirror it to the inputs */
+      memcpy(&g_assemblydata064[0], &g_assemblydata096[0],
+             sizeof(g_assemblydata064));
+      break;
+    case DEMO_APP_EXPLICT_ASSEMBLY_NUM:
+      /* do something interesting with the new data from
+       * the explicit set-data-attribute message */
+      break;
+    case DEMO_APP_CONFIG_ASSEMBLY_NUM:
+      /* Add here code to handle configuration data and check if it is ok
+       * The demo application does not handle config data.
+       * However in order to pass the test we accept any data given.
+       * EIP_ERROR
+       */
+      nRetVal = EIP_OK;
+      break;
     }
   return nRetVal;
 }
 
 EIP_BOOL8
-IApp_BeforeAssemblyDataSend(S_CIP_Instance *pa_pstInstance)
+IApp_BeforeAssemblyDataSend(S_CIP_Instance * pa_pstInstance)
 {
   /*update data to be sent e.g., read inputs of the device */
   /*In this sample app we mirror the data from out to inputs on data receive
@@ -117,7 +117,7 @@ IApp_BeforeAssemblyDataSend(S_CIP_Instance *pa_pstInstance)
    * the data is new.
    */
 
-  if (pa_pstInstance->nInstanceNr == DEMO_APP_EXPLICT_ASSEMBLY_NUM)
+  if(pa_pstInstance->nInstanceNr == DEMO_APP_EXPLICT_ASSEMBLY_NUM)
     {
       /* do something interesting with the existing data
        * for the explicit get-data-attribute message */
@@ -149,7 +149,7 @@ IApp_CipCalloc(unsigned pa_nNumberOfElements, unsigned pa_nSizeOfElement)
 }
 
 void
-IApp_CipFree(void *pa_poData)
+IApp_CipFree(void * pa_poData)
 {
   free(pa_poData);
 }

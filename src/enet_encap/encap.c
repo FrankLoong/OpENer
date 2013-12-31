@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2009, Rockwell Automation, Inc.
- * All rights reserved. 
+ * All rights reserved.
  *
  ******************************************************************************/
 #include <string.h>
@@ -25,6 +25,8 @@ extern S_CIP_Short_String ProductName;
 
 /*ip address data taken from TCPIPInterfaceObject*/
 extern S_CIP_TCPIPNetworkInterfaceConfiguration Interface_Configuration;
+
+extern void IApp_CloseSocket_tcp(int pa_nSockFd);
 
 /*** defines ***/
 
@@ -77,45 +79,45 @@ struct SDelayedEncapsulationMessage g_stDelayedEncapsulationMessages[ENCAP_NUMBE
 
 /*** private functions ***/
 void
-handleReceivedListServicesCmd(struct S_Encapsulation_Data *pa_stReceiveData);
+handleReceivedListServicesCmd(struct S_Encapsulation_Data * pa_stReceiveData);
 void
-handleReceivedListInterfacesCmd(struct S_Encapsulation_Data *pa_stReceiveData);
+handleReceivedListInterfacesCmd(struct S_Encapsulation_Data * pa_stReceiveData);
 
 void
-handleReceivedListIdentityCmdTCP(struct S_Encapsulation_Data *pa_stReceiveData);
+handleReceivedListIdentityCmdTCP(struct S_Encapsulation_Data * pa_stReceiveData);
 
 void
 handleReceivedListIdentityCmdUDP(int pa_nSocket,
-    struct sockaddr_in *pa_pstFromAddr,
-    struct S_Encapsulation_Data *pa_stReceiveData);
+                                 struct sockaddr_in * pa_pstFromAddr,
+                                 struct S_Encapsulation_Data * pa_stReceiveData);
 
 void
 handleReceivedRegisterSessionCmd(int pa_nSockfd,
-    struct S_Encapsulation_Data *pa_stReceiveData);
+                                 struct S_Encapsulation_Data * pa_stReceiveData);
 EIP_STATUS
 handleReceivedUnregisterSessionCmd(
-    struct S_Encapsulation_Data *pa_stReceiveData);
+  struct S_Encapsulation_Data * pa_stReceiveData);
 EIP_STATUS
-handleReceivedSendUnitDataCmd(struct S_Encapsulation_Data *pa_stReceiveData);
+handleReceivedSendUnitDataCmd(struct S_Encapsulation_Data * pa_stReceiveData);
 EIP_STATUS
-handleReceivedSendRRDataCmd(struct S_Encapsulation_Data *pa_stReceiveData);
+handleReceivedSendRRDataCmd(struct S_Encapsulation_Data * pa_stReceiveData);
 
 int
 getFreeSessionIndex(void);
 EIP_INT16
 createEncapsulationStructure(EIP_UINT8 * buf, int length,
-    struct S_Encapsulation_Data *pa_S_ReceiveData);
+                             struct S_Encapsulation_Data * pa_S_ReceiveData);
 EIP_STATUS
-checkRegisteredSessions(struct S_Encapsulation_Data *pa_S_ReceiveData);
+checkRegisteredSessions(struct S_Encapsulation_Data * pa_S_ReceiveData);
 int
-encapsulate_data(struct S_Encapsulation_Data *pa_S_SendData);
+encapsulate_data(struct S_Encapsulation_Data * pa_S_SendData);
 
 void
-determineDelayTime(EIP_BYTE *pa_acBufferStart,
-    struct SDelayedEncapsulationMessage *pa_pstDelayedMessageBuffer);
+determineDelayTime(EIP_BYTE * pa_acBufferStart,
+                   struct SDelayedEncapsulationMessage * pa_pstDelayedMessageBuffer);
 
-int
-encapsulateListIdentyResponseMessage(EIP_BYTE *pa_pacCommBuf);
+EIP_UINT16
+encapsulateListIdentyResponseMessage(EIP_BYTE * pa_pacCommBuf);
 
 /*   void encapInit(void)
  *   initialize sessionlist and interfaceinformation.
@@ -133,12 +135,12 @@ encapInit(void)
   srand(Interface_Configuration.IPAddress);
 
   /* initialize Sessions to invalid == free session */
-  for (i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; i++)
+  for(i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; i++)
     {
       anRegisteredSessions[i] = EIP_INVALID_SOCKET;
     }
 
-  for (i = 0; i < ENCAP_NUMBER_OF_SUPPORTED_DELAYED_ENCAP_MESSAGES; i++)
+  for(i = 0; i < ENCAP_NUMBER_OF_SUPPORTED_DELAYED_ENCAP_MESSAGES; i++)
     {
       g_stDelayedEncapsulationMessages[i].m_nSocket = -1;
     }
@@ -149,13 +151,13 @@ encapInit(void)
   g_stInterfaceInformation.Length = sizeof(g_stInterfaceInformation);
   g_stInterfaceInformation.EncapsulationProtocolVersion = 1;
   g_stInterfaceInformation.CapabilityFlags = SUPPORT_CIP_TCP
-      | SUPPORT_CIP_UDP_CLASS_0_OR_1;
+                                             | SUPPORT_CIP_UDP_CLASS_0_OR_1;
   strcpy((char *) g_stInterfaceInformation.NameofService, "Communications");
 }
 
 int
 handleReceivedExplictTCPData(int pa_socket, EIP_UINT8 * pa_buf,
-    unsigned int pa_length, int *pa_nRemainingBytes)
+                             unsigned int pa_length, int * pa_nRemainingBytes)
 {
   int nRetVal = 0;
   struct S_Encapsulation_Data sEncapData;
@@ -163,58 +165,58 @@ handleReceivedExplictTCPData(int pa_socket, EIP_UINT8 * pa_buf,
   /* the structure contains a pointer to the encapsulated data*/
   /* returns how many bytes are left after the encapsulated data*/
   *pa_nRemainingBytes = createEncapsulationStructure(pa_buf, pa_length,
-      &sEncapData);
+                                                     &sEncapData);
 
-  if (SUPPORTED_OPTIONS_MASK == sEncapData.nOptions) /*TODO generate appropriate error response*/
+  if(SUPPORTED_OPTIONS_MASK == sEncapData.nOptions)  /*TODO generate appropriate error response*/
     {
-      if (*pa_nRemainingBytes >= 0) /* check if the message is corrupt: header size + claimed payload size > than what we actually received*/
+      if(*pa_nRemainingBytes >= 0)  /* check if the message is corrupt: header size + claimed payload size > than what we actually received*/
         {
           /* full package or more received */
           sEncapData.nStatus = OPENER_ENCAP_STATUS_SUCCESS;
           nRetVal = 1;
           /* most of these functions need a reply to be send */
-          switch (sEncapData.nCommand_code)
+          switch(sEncapData.nCommand_code)
             {
-          case (COMMAND_NOP):
-            /* Nop needs no reply and does nothing */
-            nRetVal = 0;
-            break;
+            case(COMMAND_NOP):
+              /* Nop needs no reply and does nothing */
+              nRetVal = 0;
+              break;
 
-          case (COMMAND_LISTSERVICES):
-            handleReceivedListServicesCmd(&sEncapData);
-            break;
+            case(COMMAND_LISTSERVICES):
+              handleReceivedListServicesCmd(&sEncapData);
+              break;
 
-          case (COMMAND_LISTIDENTITY):
-            handleReceivedListIdentityCmdTCP(&sEncapData);
-            break;
+            case(COMMAND_LISTIDENTITY):
+              handleReceivedListIdentityCmdTCP(&sEncapData);
+              break;
 
-          case (COMMAND_LISTINTERFACES):
-            handleReceivedListInterfacesCmd(&sEncapData);
-            break;
+            case(COMMAND_LISTINTERFACES):
+              handleReceivedListInterfacesCmd(&sEncapData);
+              break;
 
-          case (COMMAND_REGISTERSESSION):
-            handleReceivedRegisterSessionCmd(pa_socket, &sEncapData);
-            break;
+            case(COMMAND_REGISTERSESSION):
+              handleReceivedRegisterSessionCmd(pa_socket, &sEncapData);
+              break;
 
-          case (COMMAND_UNREGISTERSESSION):
-            nRetVal = handleReceivedUnregisterSessionCmd(&sEncapData);
-            break;
+            case(COMMAND_UNREGISTERSESSION):
+              nRetVal = handleReceivedUnregisterSessionCmd(&sEncapData);
+              break;
 
-          case (COMMAND_SENDRRDATA):
-            nRetVal = handleReceivedSendRRDataCmd(&sEncapData);
-            break;
+            case(COMMAND_SENDRRDATA):
+              nRetVal = handleReceivedSendRRDataCmd(&sEncapData);
+              break;
 
-          case (COMMAND_SENDUNITDATA):
-            nRetVal = handleReceivedSendUnitDataCmd(&sEncapData);
-            break;
+            case(COMMAND_SENDUNITDATA):
+              nRetVal = handleReceivedSendUnitDataCmd(&sEncapData);
+              break;
 
-          default:
-            sEncapData.nStatus = OPENER_ENCAP_STATUS_INVALID_COMMAND;
-            sEncapData.nData_length = 0;
-            break;
+            default:
+              sEncapData.nStatus = OPENER_ENCAP_STATUS_INVALID_COMMAND;
+              sEncapData.nData_length = 0;
+              break;
             }
           /* if nRetVal is greater then 0 data has to be sent */
-          if (0 < nRetVal)
+          if(0 < nRetVal)
             {
               nRetVal = encapsulate_data(&sEncapData);
             }
@@ -225,8 +227,8 @@ handleReceivedExplictTCPData(int pa_socket, EIP_UINT8 * pa_buf,
 }
 
 int
-handleReceivedExplictUDPData(int pa_socket, struct sockaddr_in *pa_pstFromAddr,
-    EIP_UINT8* pa_buf, unsigned int pa_length, int *pa_nRemainingBytes)
+handleReceivedExplictUDPData(int pa_socket, struct sockaddr_in * pa_pstFromAddr,
+                             EIP_UINT8 * pa_buf, unsigned int pa_length, int * pa_nRemainingBytes)
 {
   int nRetVal = 0;
   struct S_Encapsulation_Data sEncapData;
@@ -234,45 +236,45 @@ handleReceivedExplictUDPData(int pa_socket, struct sockaddr_in *pa_pstFromAddr,
   /* the structure contains a pointer to the encapsulated data*/
   /* returns how many bytes are left after the encapsulated data*/
   *pa_nRemainingBytes = createEncapsulationStructure(pa_buf, pa_length,
-      &sEncapData);
+                                                     &sEncapData);
 
-  if (SUPPORTED_OPTIONS_MASK == sEncapData.nOptions) /*TODO generate appropriate error response*/
+  if(SUPPORTED_OPTIONS_MASK == sEncapData.nOptions)  /*TODO generate appropriate error response*/
     {
-      if (*pa_nRemainingBytes >= 0) /* check if the message is corrupt: header size + claimed payload size > than what we actually received*/
+      if(*pa_nRemainingBytes >= 0)  /* check if the message is corrupt: header size + claimed payload size > than what we actually received*/
         {
           /* full package or more received */
           sEncapData.nStatus = OPENER_ENCAP_STATUS_SUCCESS;
           nRetVal = 1;
           /* most of these functions need a reply to be send */
-          switch (sEncapData.nCommand_code)
+          switch(sEncapData.nCommand_code)
             {
-          case (COMMAND_LISTSERVICES):
-            handleReceivedListServicesCmd(&sEncapData);
-            break;
+            case(COMMAND_LISTSERVICES):
+              handleReceivedListServicesCmd(&sEncapData);
+              break;
 
-          case (COMMAND_LISTIDENTITY):
-            handleReceivedListIdentityCmdUDP(pa_socket, pa_pstFromAddr,
-                &sEncapData);
-            nRetVal = EIP_OK; /* as the response has to be delayed do not send it now */
-            break;
+            case(COMMAND_LISTIDENTITY):
+              handleReceivedListIdentityCmdUDP(pa_socket, pa_pstFromAddr,
+                                               &sEncapData);
+              nRetVal = EIP_OK; /* as the response has to be delayed do not send it now */
+              break;
 
-          case (COMMAND_LISTINTERFACES):
-            handleReceivedListInterfacesCmd(&sEncapData);
-            break;
+            case(COMMAND_LISTINTERFACES):
+              handleReceivedListInterfacesCmd(&sEncapData);
+              break;
 
             /* Fhe following commands are not to be sent via UDP */
-          case (COMMAND_NOP):
-          case (COMMAND_REGISTERSESSION):
-          case (COMMAND_UNREGISTERSESSION):
-          case (COMMAND_SENDRRDATA):
-          case (COMMAND_SENDUNITDATA):
-          default:
-            sEncapData.nStatus = OPENER_ENCAP_STATUS_INVALID_COMMAND;
-            sEncapData.nData_length = 0;
-            break;
+            case(COMMAND_NOP):
+            case(COMMAND_REGISTERSESSION):
+            case(COMMAND_UNREGISTERSESSION):
+            case(COMMAND_SENDRRDATA):
+            case(COMMAND_SENDUNITDATA):
+            default:
+              sEncapData.nStatus = OPENER_ENCAP_STATUS_INVALID_COMMAND;
+              sEncapData.nData_length = 0;
+              break;
             }
           /* if nRetVal is greater then 0 data has to be sent */
-          if (0 < nRetVal)
+          if(0 < nRetVal)
             {
               nRetVal = encapsulate_data(&sEncapData);
             }
@@ -283,9 +285,9 @@ handleReceivedExplictUDPData(int pa_socket, struct sockaddr_in *pa_pstFromAddr,
 }
 
 int
-encapsulate_data(struct S_Encapsulation_Data *pa_stSendData)
+encapsulate_data(struct S_Encapsulation_Data * pa_stSendData)
 {
-  EIP_UINT8 *acCommBuf = &(pa_stSendData->m_acCommBufferStart[2]);
+  EIP_UINT8 * acCommBuf = &(pa_stSendData->m_acCommBufferStart[2]);
   /*htols(pa_stSendData->nCommand_code, &pa_stSendData->pEncapsulation_Data);*/
   htols(pa_stSendData->nData_length, &acCommBuf);
   /*the CommBuf should already contain the correct session handle*/
@@ -306,26 +308,26 @@ encapsulate_data(struct S_Encapsulation_Data *pa_stSendData)
  *      pa_S_ReceiveData pointer to structure with received data
  */
 void
-handleReceivedListServicesCmd(struct S_Encapsulation_Data *pa_stReceiveData)
+handleReceivedListServicesCmd(struct S_Encapsulation_Data * pa_stReceiveData)
 {
-  EIP_UINT8 *pacCommBuf = pa_stReceiveData->m_acCurrentCommBufferPos;
+  EIP_UINT8 * pacCommBuf = pa_stReceiveData->m_acCurrentCommBufferPos;
 
   pa_stReceiveData->nData_length = g_stInterfaceInformation.Length + 2;
 
   /* copy Interface data to nmsg for sending */
   htols(1, &pacCommBuf);
   htols(g_stInterfaceInformation.TypeCode, &pacCommBuf);
-  htols((EIP_UINT16) (g_stInterfaceInformation.Length - 4), &pacCommBuf);
+  htols((EIP_UINT16)(g_stInterfaceInformation.Length - 4), &pacCommBuf);
   htols(g_stInterfaceInformation.EncapsulationProtocolVersion, &pacCommBuf);
   htols(g_stInterfaceInformation.CapabilityFlags, &pacCommBuf);
   memcpy(pacCommBuf, g_stInterfaceInformation.NameofService,
-      sizeof(g_stInterfaceInformation.NameofService));
+         sizeof(g_stInterfaceInformation.NameofService));
 }
 
 void
-handleReceivedListInterfacesCmd(struct S_Encapsulation_Data *pa_stReceiveData)
+handleReceivedListInterfacesCmd(struct S_Encapsulation_Data * pa_stReceiveData)
 {
-  EIP_UINT8 *pacCommBuf = pa_stReceiveData->m_acCurrentCommBufferPos;
+  EIP_UINT8 * pacCommBuf = pa_stReceiveData->m_acCurrentCommBufferPos;
   pa_stReceiveData->nData_length = 2;
   htols(0x0000, &pacCommBuf); /* copy Interface data to nmsg for sending */
 }
@@ -334,42 +336,42 @@ void
 handleReceivedListIdentityCmdTCP(struct S_Encapsulation_Data * pa_stReceiveData)
 {
   pa_stReceiveData->nData_length = encapsulateListIdentyResponseMessage(
-      pa_stReceiveData->m_acCurrentCommBufferPos);
+                                     pa_stReceiveData->m_acCurrentCommBufferPos);
 }
 
 void
 handleReceivedListIdentityCmdUDP(int pa_nSocket,
-    struct sockaddr_in *pa_pstFromAddr,
-    struct S_Encapsulation_Data *pa_stReceiveData)
-{  
-  struct SDelayedEncapsulationMessage *pstDelayedMessageBuffer = NULL;
+                                 struct sockaddr_in * pa_pstFromAddr,
+                                 struct S_Encapsulation_Data * pa_stReceiveData)
+{
+  struct SDelayedEncapsulationMessage * pstDelayedMessageBuffer = NULL;
   unsigned int i;
-  EIP_UINT8 *pacCommBuf;
+  EIP_UINT8 * pacCommBuf;
 
-  for (i = 0; i < ENCAP_NUMBER_OF_SUPPORTED_DELAYED_ENCAP_MESSAGES; i++)
+  for(i = 0; i < ENCAP_NUMBER_OF_SUPPORTED_DELAYED_ENCAP_MESSAGES; i++)
     {
-      if (-1 == g_stDelayedEncapsulationMessages[i].m_nSocket)
+      if(-1 == g_stDelayedEncapsulationMessages[i].m_nSocket)
         {
           pstDelayedMessageBuffer = &(g_stDelayedEncapsulationMessages[i]);
           break;
         }
     }
 
-  if (NULL != pstDelayedMessageBuffer)
+  if(NULL != pstDelayedMessageBuffer)
     {
       pstDelayedMessageBuffer->m_nSocket = pa_nSocket;
       memcpy((&pstDelayedMessageBuffer->m_stSendToAddr), pa_pstFromAddr,
-          sizeof(struct sockaddr_in));
+             sizeof(struct sockaddr_in));
 
       determineDelayTime(pa_stReceiveData->m_acCommBufferStart,
-          pstDelayedMessageBuffer);
+                         pstDelayedMessageBuffer);
 
       memcpy(&(pstDelayedMessageBuffer->m_anMsg[0]),
-          pa_stReceiveData->m_acCommBufferStart, ENCAPSULATION_HEADER_LENGTH);
+             pa_stReceiveData->m_acCommBufferStart, ENCAPSULATION_HEADER_LENGTH);
 
       pstDelayedMessageBuffer->m_unMessageSize =
-          encapsulateListIdentyResponseMessage(
-              &(pstDelayedMessageBuffer->m_anMsg[ENCAPSULATION_HEADER_LENGTH]));
+        encapsulateListIdentyResponseMessage(
+          &(pstDelayedMessageBuffer->m_anMsg[ENCAPSULATION_HEADER_LENGTH]));
 
       pacCommBuf = pstDelayedMessageBuffer->m_anMsg + 2;
       htols(pstDelayedMessageBuffer->m_unMessageSize, &pacCommBuf);
@@ -377,11 +379,11 @@ handleReceivedListIdentityCmdUDP(int pa_nSocket,
     }
 }
 
-int
-encapsulateListIdentyResponseMessage(EIP_BYTE *pa_pacCommBuf)
+EIP_UINT16
+encapsulateListIdentyResponseMessage(EIP_BYTE * pa_pacCommBuf)
 {
-  EIP_UINT8 *pacCommBufRunner = pa_pacCommBuf;
-  EIP_BYTE *acIdLenBuf;
+  EIP_UINT8 * pacCommBufRunner = pa_pacCommBuf;
+  EIP_BYTE * acIdLenBuf;
 
   htols(1, &pacCommBufRunner); /* one item */
   htols(ITEM_ID_LISTIDENTITY, &pacCommBufRunner);
@@ -392,7 +394,7 @@ encapsulateListIdentyResponseMessage(EIP_BYTE *pa_pacCommBuf)
   htols(SUPPORTED_PROTOCOL_VERSION, &pacCommBufRunner);
 
   encapsulateIPAdress(OPENER_ETHERNET_PORT, Interface_Configuration.IPAddress,
-      pacCommBufRunner);
+                      pacCommBufRunner);
   pacCommBufRunner += 8;
 
   memset(pacCommBufRunner, 0, 8);
@@ -416,24 +418,24 @@ encapsulateListIdentyResponseMessage(EIP_BYTE *pa_pacCommBuf)
 }
 
 void
-determineDelayTime(EIP_BYTE *pa_acBufferStart,
-    struct SDelayedEncapsulationMessage *pa_pstDelayedMessageBuffer)
+determineDelayTime(EIP_BYTE * pa_acBufferStart,
+                   struct SDelayedEncapsulationMessage * pa_pstDelayedMessageBuffer)
 {
   EIP_UINT16 unMaxDelayTime;
 
   pa_acBufferStart += 12; /* start of the sender context */
   unMaxDelayTime = ltohs(&pa_acBufferStart);
-  if (0 == unMaxDelayTime)
+  if(0 == unMaxDelayTime)
     {
       unMaxDelayTime = 2000;
     }
-  else if (500 > unMaxDelayTime)
+  else if(500 > unMaxDelayTime)
     {
       unMaxDelayTime = 500;
     }
 
   pa_pstDelayedMessageBuffer->m_unTimeOut = (unMaxDelayTime * rand()) / RAND_MAX
-      + 1;
+                                            + 1;
 }
 
 /*   void RegisterSession(struct S_Encapsulation_Data *pa_S_ReceiveData)
@@ -443,56 +445,59 @@ determineDelayTime(EIP_BYTE *pa_acBufferStart,
  */
 void
 handleReceivedRegisterSessionCmd(int pa_nSockfd,
-    struct S_Encapsulation_Data * pa_stReceiveData)
+                                 struct S_Encapsulation_Data * pa_stReceiveData)
 {
   int i;
   int nSessionIndex = 0;
-  EIP_UINT8 *pacBuf;
+  EIP_UINT8 * pacBuf;
   EIP_UINT16 nProtocolVersion = ltohs(
-      &pa_stReceiveData->m_acCurrentCommBufferPos);
+                                  &pa_stReceiveData->m_acCurrentCommBufferPos);
   EIP_UINT16 nOptionFlag = ltohs(&pa_stReceiveData->m_acCurrentCommBufferPos);
 
   /* check if requested protocol version is supported and the register session option flag is zero*/
-  if ((0 < nProtocolVersion) && (nProtocolVersion <= SUPPORTED_PROTOCOL_VERSION)
-      && (0 == nOptionFlag))
-    { /*Option field should be zero*/
+  if((0 < nProtocolVersion) && (nProtocolVersion <= SUPPORTED_PROTOCOL_VERSION)
+     && (0 == nOptionFlag))
+    {
+      /*Option field should be zero*/
       /* check if the socket has already a session open */
-      for (i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; ++i)
+      for(i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; ++i)
         {
-          if (anRegisteredSessions[i] == pa_nSockfd)
+          if(anRegisteredSessions[i] == pa_nSockfd)
             {
               /* the socket has already registered a session this is not allowed*/
               pa_stReceiveData->nSession_handle = i + 1; /*return the already assigned session back, the cip spec is not clear about this needs to be tested*/
               pa_stReceiveData->nStatus =
-                  OPENER_ENCAP_STATUS_UNSUPPORTED_PROTOCOL;
+                OPENER_ENCAP_STATUS_UNSUPPORTED_PROTOCOL;
               nSessionIndex = INVALID_SESSION;
               pacBuf =
-                  &pa_stReceiveData->m_acCommBufferStart[ENCAPSULATION_HEADER_SESSION_HANDLE_POS];
+                &pa_stReceiveData->m_acCommBufferStart[ENCAPSULATION_HEADER_SESSION_HANDLE_POS];
               htoll(pa_stReceiveData->nSession_handle, &pacBuf); /*encapsulate_data will not update the session handle so we have to do it here by hand*/
               break;
             }
         }
 
-      if (INVALID_SESSION != nSessionIndex)
+      if(INVALID_SESSION != nSessionIndex)
         {
           nSessionIndex = getFreeSessionIndex();
-          if (INVALID_SESSION == nSessionIndex) /* no more sessions available */
+          if(INVALID_SESSION == nSessionIndex)  /* no more sessions available */
             {
               pa_stReceiveData->nStatus = OPENER_ENCAP_STATUS_INSUFFICIENT_MEM;
             }
           else
-            { /* successful session registered */
+            {
+              /* successful session registered */
               anRegisteredSessions[nSessionIndex] = pa_nSockfd; /* store associated socket */
               pa_stReceiveData->nSession_handle = nSessionIndex + 1;
               pa_stReceiveData->nStatus = OPENER_ENCAP_STATUS_SUCCESS;
               pacBuf =
-                  &pa_stReceiveData->m_acCommBufferStart[ENCAPSULATION_HEADER_SESSION_HANDLE_POS];
+                &pa_stReceiveData->m_acCommBufferStart[ENCAPSULATION_HEADER_SESSION_HANDLE_POS];
               htoll(pa_stReceiveData->nSession_handle, &pacBuf); /*encapsulate_data will not update the session handle so we have to do it here by hand*/
             }
         }
     }
   else
-    { /* protocol not supported */
+    {
+      /* protocol not supported */
       pa_stReceiveData->nStatus = OPENER_ENCAP_STATUS_UNSUPPORTED_PROTOCOL;
     }
 
@@ -505,16 +510,16 @@ handleReceivedRegisterSessionCmd(int pa_nSockfd,
  */
 EIP_STATUS
 handleReceivedUnregisterSessionCmd(
-    struct S_Encapsulation_Data * pa_stReceiveData)
+  struct S_Encapsulation_Data * pa_stReceiveData)
 {
   int i;
 
-  if ((0 < pa_stReceiveData->nSession_handle)
-      && (pa_stReceiveData->nSession_handle
-          <= OPENER_NUMBER_OF_SUPPORTED_SESSIONS))
+  if((0 < pa_stReceiveData->nSession_handle)
+     && (pa_stReceiveData->nSession_handle
+         <= OPENER_NUMBER_OF_SUPPORTED_SESSIONS))
     {
       i = pa_stReceiveData->nSession_handle - 1;
-      if (EIP_INVALID_SOCKET != anRegisteredSessions[i])
+      if(EIP_INVALID_SOCKET != anRegisteredSessions[i])
         {
           IApp_CloseSocket_tcp(anRegisteredSessions[i]);
           anRegisteredSessions[i] = EIP_INVALID_SOCKET;
@@ -538,7 +543,7 @@ handleReceivedSendUnitDataCmd(struct S_Encapsulation_Data * pa_stReceiveData)
   EIP_INT16 nSendSize;
   EIP_STATUS eRetVal = EIP_OK_SEND;
 
-  if (pa_stReceiveData->nData_length >= 6)
+  if(pa_stReceiveData->nData_length >= 6)
     {
       /* Command specific data UDINT .. Interface Handle, UINT .. Timeout, CPF packets */
       /* don't use the data yet */
@@ -546,14 +551,15 @@ handleReceivedSendUnitDataCmd(struct S_Encapsulation_Data * pa_stReceiveData)
       ltohs(&pa_stReceiveData->m_acCurrentCommBufferPos); /* skip over unused timeout value*/
       pa_stReceiveData->nData_length -= 6; /* the rest is in CPF format*/
 
-      if (EIP_ERROR != checkRegisteredSessions(pa_stReceiveData)) /* see if the EIP session is registered*/
+      if(EIP_ERROR != checkRegisteredSessions(pa_stReceiveData))  /* see if the EIP session is registered*/
         {
           nSendSize =
-              notifyConnectedCPF(pa_stReceiveData,
-                  &pa_stReceiveData->m_acCommBufferStart[ENCAPSULATION_HEADER_LENGTH]);
+            notifyConnectedCPF(pa_stReceiveData,
+                               &pa_stReceiveData->m_acCommBufferStart[ENCAPSULATION_HEADER_LENGTH]);
 
-          if (0 < nSendSize)
-            { /* need to send reply */
+          if(0 < nSendSize)
+            {
+              /* need to send reply */
               pa_stReceiveData->nData_length = nSendSize;
             }
           else
@@ -562,7 +568,8 @@ handleReceivedSendUnitDataCmd(struct S_Encapsulation_Data * pa_stReceiveData)
             }
         }
       else
-        { /* received a package with non registered session handle */
+        {
+          /* received a package with non registered session handle */
           pa_stReceiveData->nData_length = 0;
           pa_stReceiveData->nStatus = OPENER_ENCAP_STATUS_INVALID_SESSION_HANDLE;
         }
@@ -573,8 +580,8 @@ handleReceivedSendUnitDataCmd(struct S_Encapsulation_Data * pa_stReceiveData)
 /*   INT8 SendRRData(struct S_Encapsulation_Data *pa_stReceiveData)
  *   Call UCMM or Message Router if UCMM not implemented.
  *      pa_stReceiveData pointer to structure with data and header information.
- *  return status 	0 .. success.
- * 					-1 .. error
+ *  return status   0 .. success.
+ *          -1 .. error
  */
 EIP_STATUS
 handleReceivedSendRRDataCmd(struct S_Encapsulation_Data * pa_stReceiveData)
@@ -582,7 +589,7 @@ handleReceivedSendRRDataCmd(struct S_Encapsulation_Data * pa_stReceiveData)
   EIP_INT16 nSendSize;
   EIP_STATUS eRetVal = EIP_OK_SEND;
 
-  if (pa_stReceiveData->nData_length >= 6)
+  if(pa_stReceiveData->nData_length >= 6)
     {
       /* Commandspecific data UDINT .. Interface Handle, UINT .. Timeout, CPF packets */
       /* don't use the data yet */
@@ -590,14 +597,15 @@ handleReceivedSendRRDataCmd(struct S_Encapsulation_Data * pa_stReceiveData)
       ltohs(&pa_stReceiveData->m_acCurrentCommBufferPos); /* skip over unused timeout value*/
       pa_stReceiveData->nData_length -= 6; /* the rest is in CPF format*/
 
-      if (EIP_ERROR != checkRegisteredSessions(pa_stReceiveData)) /* see if the EIP session is registered*/
+      if(EIP_ERROR != checkRegisteredSessions(pa_stReceiveData))  /* see if the EIP session is registered*/
         {
           nSendSize =
-              notifyCPF(pa_stReceiveData,
-                  &pa_stReceiveData->m_acCommBufferStart[ENCAPSULATION_HEADER_LENGTH]);
+            notifyCPF(pa_stReceiveData,
+                      &pa_stReceiveData->m_acCommBufferStart[ENCAPSULATION_HEADER_LENGTH]);
 
-          if (nSendSize >= 0)
-            { /* need to send reply */
+          if(nSendSize >= 0)
+            {
+              /* need to send reply */
               pa_stReceiveData->nData_length = nSendSize;
             }
           else
@@ -606,7 +614,8 @@ handleReceivedSendRRDataCmd(struct S_Encapsulation_Data * pa_stReceiveData)
             }
         }
       else
-        { /* received a package with non registered session handle */
+        {
+          /* received a package with non registered session handle */
           pa_stReceiveData->nData_length = 0;
           pa_stReceiveData->nStatus = OPENER_ENCAP_STATUS_INVALID_SESSION_HANDLE;
         }
@@ -617,15 +626,15 @@ handleReceivedSendRRDataCmd(struct S_Encapsulation_Data * pa_stReceiveData)
 /*   INT8 getFreeSessionIndex()
  *   search for available sessions an return index.
  *  return index of free session in anRegisteredSessions.
- * 			-1 .. no free session available
+ *      -1 .. no free session available
  */
 int
 getFreeSessionIndex(void)
 {
   int i;
-  for (i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; i++)
+  for(i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; i++)
     {
-      if (EIP_INVALID_SOCKET == anRegisteredSessions[i])
+      if(EIP_INVALID_SOCKET == anRegisteredSessions[i])
         {
           return i;
         }
@@ -635,16 +644,16 @@ getFreeSessionIndex(void)
 
 /*   INT16 createEncapsulationStructure(INT16 pa_sockfd, INT8 *pa_buf, UINT16 pa_length, struct S_Encapsulation_Data *pa_S_Data)
  *   copy data from pa_buf in little endian to host in structure.
- *      pa_length	length of the data in pa_buf.
- *      pa_S_Data	structure to which data shall be copied
+ *      pa_length length of the data in pa_buf.
+ *      pa_S_Data structure to which data shall be copied
  *  return difference between bytes in pa_buf an data_length
- *  		0 .. full package received
- * 			>0 .. more than one packet received
- * 			<0 .. only fragment of data portion received
+ *      0 .. full package received
+ *      >0 .. more than one packet received
+ *      <0 .. only fragment of data portion received
  */EIP_INT16
 createEncapsulationStructure(EIP_UINT8 * pa_buf, /* receive buffer*/
-int pa_length, /* size of stuff in  buffer (might be more than one message)*/
-struct S_Encapsulation_Data * pa_stData) /* the struct to be created*/
+                             int pa_length, /* size of stuff in  buffer (might be more than one message)*/
+                             struct S_Encapsulation_Data * pa_stData) /* the struct to be created*/
 
 {
   pa_stData->m_acCommBufferStart = pa_buf;
@@ -663,18 +672,18 @@ struct S_Encapsulation_Data * pa_stData) /* the struct to be created*/
  *   check if received package belongs to registered session.
  *      pa_stReceiveData received data.
  *  return 0 .. Session registered
- *  		-1 .. invalid session -> return unsupported command received
+ *      -1 .. invalid session -> return unsupported command received
  */
 EIP_STATUS
 checkRegisteredSessions(struct S_Encapsulation_Data * pa_stReceiveData)
 {
 
-  if ((0 < pa_stReceiveData->nSession_handle)
-      && (pa_stReceiveData->nSession_handle
-          <= OPENER_NUMBER_OF_SUPPORTED_SESSIONS))
+  if((0 < pa_stReceiveData->nSession_handle)
+     && (pa_stReceiveData->nSession_handle
+         <= OPENER_NUMBER_OF_SUPPORTED_SESSIONS))
     {
-      if (EIP_INVALID_SOCKET
-          != anRegisteredSessions[pa_stReceiveData->nSession_handle - 1])
+      if(EIP_INVALID_SOCKET
+         != anRegisteredSessions[pa_stReceiveData->nSession_handle - 1])
         {
           return EIP_OK;
         }
@@ -687,9 +696,9 @@ void
 closeSession(int pa_nSocket)
 {
   int i;
-  for (i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; ++i)
+  for(i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; ++i)
     {
-      if (anRegisteredSessions[i] == pa_nSocket)
+      if(anRegisteredSessions[i] == pa_nSocket)
         {
           IApp_CloseSocket_tcp(pa_nSocket);
           anRegisteredSessions[i] = EIP_INVALID_SOCKET;
@@ -702,9 +711,9 @@ void
 encapShutDown(void)
 {
   int i;
-  for (i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; ++i)
+  for(i = 0; i < OPENER_NUMBER_OF_SUPPORTED_SESSIONS; ++i)
     {
-      if (EIP_INVALID_SOCKET != anRegisteredSessions[i])
+      if(EIP_INVALID_SOCKET != anRegisteredSessions[i])
         {
           IApp_CloseSocket_tcp(anRegisteredSessions[i]);
           anRegisteredSessions[i] = EIP_INVALID_SOCKET;
@@ -716,18 +725,18 @@ void
 manageEncapsulationMessages()
 {
   unsigned int i;
-  for (i = 0; i < ENCAP_NUMBER_OF_SUPPORTED_DELAYED_ENCAP_MESSAGES; i++)
+  for(i = 0; i < ENCAP_NUMBER_OF_SUPPORTED_DELAYED_ENCAP_MESSAGES; i++)
     {
-      if (-1 != g_stDelayedEncapsulationMessages[i].m_nSocket)
+      if(-1 != g_stDelayedEncapsulationMessages[i].m_nSocket)
         {
           g_stDelayedEncapsulationMessages[i].m_unTimeOut -= OPENER_TIMER_TICK;
-          if (0 >= g_stDelayedEncapsulationMessages[i].m_unTimeOut)
+          if(0 >= g_stDelayedEncapsulationMessages[i].m_unTimeOut)
             {
               IApp_SendUDPData(
-                  &(g_stDelayedEncapsulationMessages[i].m_stSendToAddr),
-                  g_stDelayedEncapsulationMessages[i].m_nSocket,
-                  &(g_stDelayedEncapsulationMessages[i].m_anMsg[0]),
-                  g_stDelayedEncapsulationMessages[i].m_unMessageSize);
+                &(g_stDelayedEncapsulationMessages[i].m_stSendToAddr),
+                g_stDelayedEncapsulationMessages[i].m_nSocket,
+                &(g_stDelayedEncapsulationMessages[i].m_anMsg[0]),
+                g_stDelayedEncapsulationMessages[i].m_unMessageSize);
               g_stDelayedEncapsulationMessages[i].m_nSocket = -1;
             }
         }

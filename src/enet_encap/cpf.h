@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2009, Rockwell Automation, Inc.
- * All rights reserved. 
+ * All rights reserved.
  *
  ******************************************************************************/
 #ifndef _CPF_H
@@ -47,7 +47,7 @@ typedef struct
 {
   EIP_UINT16 TypeID;
   EIP_UINT16 Length;
-  EIP_UINT8 *Data;
+  EIP_UINT8 * Data;
 } S_Data_Item;
 
 typedef struct
@@ -72,51 +72,52 @@ typedef struct
 
 /*! \ingroup ENCAP
  * Parse the CPF data from a received unconnected explicit message and
- * hand the data on to the message router 
+ * hand the data on to the message router
  *
  * @param  pa_stReceiveData pointer to the encapsulation structure with the received message
  * @param  pa_acReplyBuf reply buffer
  * @return number of bytes to be sent back. < 0 if nothing should be sent
  */
 int notifyCPF(struct S_Encapsulation_Data * pa_stReceiveData,
-    EIP_UINT8 * pa_acReplyBuf);
+              EIP_UINT8 * pa_acReplyBuf);
 
 /*! \ingroup ENCAP
  * Parse the CPF data from a received connected explicit message, check
- * the connection status, update any timers, and hand the data on to 
- * the message router 
+ * the connection status, update any timers, and hand the data on to
+ * the message router
  *
  * @param  pa_stReceiveData pointer to the encapsulation structure with the received message
  * @param  pa_acReplyBuf reply buffer
  * @return number of bytes to be sent back. < 0 if nothing should be sent
  */
-int notifyConnectedCPF(struct S_Encapsulation_Data * pa_stReceiveData,
-    EIP_UINT8 * pa_acReplyBuf);
+EIP_STATUS notifyConnectedCPF(struct S_Encapsulation_Data * pa_stReceiveData,
+                              EIP_UINT8 * pa_acReplyBuf);
 
 /*! \ingroup ENCAP
  *  Create CPF structure out of the received data.
- *  @param  pa_Data		pointer to data which need to be structured.
- *  @param  pa_DataLength	length of data in pa_Data.
- *  @param  pa_CPF_data	pointer to structure of CPF data item.
+ *  @param  pa_Data   pointer to data which need to be structured.
+ *  @param  pa_DataLength length of data in pa_Data.
+ *  @param  pa_CPF_data pointer to structure of CPF data item.
  *  @return status
- * 	       EIP_OK .. success
- * 	       EIP_ERROR .. error
+ *         EIP_OK .. success
+ *         EIP_ERROR .. error
  */
 EIP_STATUS createCPFstructure(EIP_UINT8 * pa_Data, int pa_DataLength,
-    S_CIP_CPF_Data * pa_CPF_data);
+                              S_CIP_CPF_Data * pa_CPF_data);
 
 /*! \ingroup ENCAP
  * Copy data from MRResponse struct and CPFDataItem into linear memory in pa_msg for transmission over in encapsulation.
- * @param  pa_MRResponse	pointer to message router response which has to be aligned into linear memory.
- * @param  pa_CPFDataItem	pointer to CPF structure which has to be aligned into linear memory.
- * @param  pa_msg		pointer to linear memory.
+ * @param  pa_MRResponse  pointer to message router response which has to be aligned into linear memory.
+ * @param  pa_CPFDataItem pointer to CPF structure which has to be aligned into linear memory.
+ * @param  pa_msg   pointer to linear memory.
  * @return length of reply in pa_msg in bytes
- * 	   EIP_ERROR .. error
+ *     EIP_ERROR .. error
  */
 int assembleLinearMsg(S_CIP_MR_Response * pa_MRResponse,
-    S_CIP_CPF_Data * pa_CPFDataItem, EIP_UINT8 * pa_msg);
+                      S_CIP_CPF_Data * pa_CPFDataItem,
+                      EIP_UINT8 * pa_msg);
 
-/*!\ingroup ENCAP 
+/*!\ingroup ENCAP
  * \brief Data storage for the any cpf data
  * Currently we are single threaded and need only one cpf at the time.
  * For future extensions towards multithreading maybe more cpf data items may be necessary

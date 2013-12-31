@@ -19,8 +19,8 @@
  *    - On an error the general status code to be put into the response
  */
 int
-establishIOConnction(struct CIP_ConnectionObject *pa_pstConnObjData,
-    EIP_UINT16 *pa_pnExtendedError);
+establishIOConnction(struct CIP_ConnectionObject * pa_pstConnObjData,
+                     EIP_UINT16 * pa_pnExtendedError);
 
 /** \brief Take the data given in the connection object structure and open the necessary communication channels
  *
@@ -31,7 +31,7 @@ establishIOConnction(struct CIP_ConnectionObject *pa_pstConnObjData,
  *    - On an error the general status code to be put into the response
  */
 int
-openCommunicationChannels(struct CIP_ConnectionObject *pa_pstIOConnObj);
+openCommunicationChannels(struct CIP_ConnectionObject * pa_pstIOConnObj);
 
 
 /*! \brief close the communication channels of the given connection and remove it
@@ -40,10 +40,9 @@ openCommunicationChannels(struct CIP_ConnectionObject *pa_pstIOConnObj);
  * @param pa_pstConnObjData pointer to the connection object data
  */
 void
-closeCommChannelsAndRemoveFromActiveConnsList(
-    struct CIP_ConnectionObject *pa_pstConnObjData);
+closeCommChannelsAndRemoveFromActiveConnsList( struct CIP_ConnectionObject * pa_pstConnObjData);
 
-extern EIP_UINT8 *g_pnConfigDataBuffer;
+extern EIP_UINT8 * g_pnConfigDataBuffer;
 extern unsigned int g_unConfigDataLen;
 
 #endif /* CIPIOCONNECTION_H_ */

@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2009, Rockwell Automation, Inc.
- * All rights reserved. 
+ * All rights reserved.
  *
  ******************************************************************************/
 #include <string.h>
@@ -18,49 +18,49 @@ EIP_UINT16 VendorID = OPENER_DEVICE_VENDOR_ID; /* #1 */
 EIP_UINT16 DeviceType = OPENER_DEVICE_TYPE; /* #2 */
 EIP_UINT16 ProductCode = OPENER_DEVICE_PRODUCT_CODE; /* #3 */
 S_CIP_Revision Revison =
-  { OPENER_DEVICE_MAJOR_REVISION, OPENER_DEVICE_MINOR_REVISION }; /* #4 */
+{ OPENER_DEVICE_MAJOR_REVISION, OPENER_DEVICE_MINOR_REVISION }; /* #4 */
 EIP_UINT16 ID_Status = 0; /* #5 status of the device */
 EIP_UINT32 SerialNumber = 0; /* #6  Has to be set prior to OpENer initialization */
 S_CIP_Short_String ProductName =
-  { sizeof(OPENER_DEVICE_NAME) - 1, OPENER_DEVICE_NAME }; /* #7 */
+{ sizeof(OPENER_DEVICE_NAME) - 1, (EIP_UINT8*)OPENER_DEVICE_NAME }; /* #7 */
 
 
 void setDeviceSerialNumber(EIP_UINT32 pa_nSerialNumber)
-  {
-    SerialNumber = pa_nSerialNumber;
-  }
+{
+  SerialNumber = pa_nSerialNumber;
+}
 
 void setDeviceStatus(EIP_UINT16 pa_unStatus)
 {
   ID_Status = pa_unStatus;
 }
 
-static EIP_STATUS Reset(S_CIP_Instance *pa_pstInstance, /* pointer to instance*/
-    S_CIP_MR_Request *pa_stMRRequest, /* pointer to message router request*/
-    S_CIP_MR_Response *pa_stMRResponse) /* pointer to message router response*/
-  {
-	EIP_STATUS nRetVal;
-    (void)pa_pstInstance;
+static EIP_STATUS Reset(S_CIP_Instance * pa_pstInstance, /* pointer to instance*/
+                        S_CIP_MR_Request * pa_stMRRequest, /* pointer to message router request*/
+                        S_CIP_MR_Response * pa_stMRResponse) /* pointer to message router response*/
+{
+  EIP_STATUS nRetVal;
+  (void)pa_pstInstance;
 
-    nRetVal = EIP_OK_SEND;
+  nRetVal = EIP_OK_SEND;
 
-    pa_stMRResponse->ReplyService = (0x80 | pa_stMRRequest->Service);
-    pa_stMRResponse->SizeofAdditionalStatus = 0;
-    pa_stMRResponse->GeneralStatus = CIP_ERROR_SUCCESS;
+  pa_stMRResponse->ReplyService = (0x80 | pa_stMRRequest->Service);
+  pa_stMRResponse->SizeofAdditionalStatus = 0;
+  pa_stMRResponse->GeneralStatus = CIP_ERROR_SUCCESS;
 
-    if (pa_stMRRequest->DataLength == 1)
-      {
-        switch (pa_stMRRequest->Data[0])
-          {
+  if(pa_stMRRequest->DataLength == 1)
+    {
+      switch(pa_stMRRequest->Data[0])
+        {
         case 0: /*emulate device reset*/
-          if (EIP_ERROR == IApp_ResetDevice())
+          if(EIP_ERROR == IApp_ResetDevice())
             {
               pa_stMRResponse->GeneralStatus = CIP_ERROR_INVALID_PARAMETER;
             }
           break;
 
         case 1: /*reset to device settings*/
-          if (EIP_ERROR == IApp_ResetDeviceToInitialConfiguration())
+          if(EIP_ERROR == IApp_ResetDeviceToInitialConfiguration())
             {
               pa_stMRResponse->GeneralStatus = CIP_ERROR_INVALID_PARAMETER;
             }
@@ -69,54 +69,54 @@ static EIP_STATUS Reset(S_CIP_Instance *pa_pstInstance, /* pointer to instance*/
         default:
           pa_stMRResponse->GeneralStatus = CIP_ERROR_INVALID_PARAMETER;
           break;
-          }
-      }
-    else
-      {
-        /*The same behavior as if the data value given would be 0
-          emulate device reset*/
-        if (EIP_ERROR == IApp_ResetDevice())
-          {
-            pa_stMRResponse->GeneralStatus = CIP_ERROR_INVALID_PARAMETER;
-          }
-        else
-          {
-         // nRetVal = EIP_OK;
-          }
-      }
-    pa_stMRResponse->DataLength = 0;
-    return nRetVal;
-  }
+        }
+    }
+  else
+    {
+      /*The same behavior as if the data value given would be 0
+        emulate device reset*/
+      if(EIP_ERROR == IApp_ResetDevice())
+        {
+          pa_stMRResponse->GeneralStatus = CIP_ERROR_INVALID_PARAMETER;
+        }
+      else
+        {
+          // nRetVal = EIP_OK;
+        }
+    }
+  pa_stMRResponse->DataLength = 0;
+  return nRetVal;
+}
 
 EIP_STATUS CIP_Identity_Init()
-  {
-    S_CIP_Class *pClass;
-    S_CIP_Instance *pInstance;
+{
+  S_CIP_Class * pClass;
+  S_CIP_Instance * pInstance;
 
-    pClass = createCIPClass(CIP_IDENTITY_CLASS_CODE, 0, /* # of non-default class attributes*/
-        MASK4(1, 2, 6, 7), /* class getAttributeAll mask		CIP spec 5-2.3.2*/
-        0, /* # of class services*/
-        7, /* # of instance attributes*/
-        MASK7(1, 2, 3, 4, 5, 6, 7), /* instance getAttributeAll mask	CIP spec 5-2.3.2*/
-        1, /* # of instance services*/
-        1, /* # of instances*/
-        "identity", /* class name (for debug)*/
-        1); /* class revision*/
+  pClass = createCIPClass(CIP_IDENTITY_CLASS_CODE, 0, /* # of non-default class attributes*/
+                          MASK4(1, 2, 6, 7), /* class getAttributeAll mask    CIP spec 5-2.3.2*/
+                          0, /* # of class services*/
+                          7, /* # of instance attributes*/
+                          MASK7(1, 2, 3, 4, 5, 6, 7), /* instance getAttributeAll mask  CIP spec 5-2.3.2*/
+                          1, /* # of instance services*/
+                          1, /* # of instances*/
+                          "identity", /* class name (for debug)*/
+                          1); /* class revision*/
 
-    if (pClass == 0)
-      return EIP_ERROR;
+  if(pClass == 0)
+    return EIP_ERROR;
 
-    pInstance = getCIPInstance(pClass, 1);
+  pInstance = getCIPInstance(pClass, 1);
 
-    insertAttribute(pInstance, 1, CIP_UINT, &VendorID, CIP_ATTRIB_GETABLE);
-    insertAttribute(pInstance, 2, CIP_UINT, &DeviceType, CIP_ATTRIB_GETABLE);
-    insertAttribute(pInstance, 3, CIP_UINT, &ProductCode, CIP_ATTRIB_GETABLE);
-    insertAttribute(pInstance, 4, CIP_USINT_USINT, &Revison, CIP_ATTRIB_GETABLE);
-    insertAttribute(pInstance, 5, CIP_WORD, &ID_Status, CIP_ATTRIB_GETABLE);
-    insertAttribute(pInstance, 6, CIP_UDINT, &SerialNumber, CIP_ATTRIB_GETABLE);
-    insertAttribute(pInstance, 7, CIP_SHORT_STRING, &ProductName, CIP_ATTRIB_GETABLE);
+  insertAttribute(pInstance, 1, CIP_UINT, &VendorID, CIP_ATTRIB_GETABLE);
+  insertAttribute(pInstance, 2, CIP_UINT, &DeviceType, CIP_ATTRIB_GETABLE);
+  insertAttribute(pInstance, 3, CIP_UINT, &ProductCode, CIP_ATTRIB_GETABLE);
+  insertAttribute(pInstance, 4, CIP_USINT_USINT, &Revison, CIP_ATTRIB_GETABLE);
+  insertAttribute(pInstance, 5, CIP_WORD, &ID_Status, CIP_ATTRIB_GETABLE);
+  insertAttribute(pInstance, 6, CIP_UDINT, &SerialNumber, CIP_ATTRIB_GETABLE);
+  insertAttribute(pInstance, 7, CIP_SHORT_STRING, &ProductName, CIP_ATTRIB_GETABLE);
 
-    insertService(pClass, CIP_RESET, &Reset, "Reset");
+  insertService(pClass, CIP_RESET, &Reset, "Reset");
 
-    return EIP_OK;
-  }
+  return EIP_OK;
+}

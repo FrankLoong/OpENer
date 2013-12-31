@@ -2,16 +2,22 @@
 # Ethernet encapsulation library      #
 #######################################
 
-set( ENET_ENCAP_SRC cpf.c encap.c endianconv.c )
+include_directories(
+  ${INTTYPES_DIR}
+  ${CMAKE_SOURCE_DIR}/src
+  ${CMAKE_SOURCE_DIR}/src/cip
+  ${CMAKE_SOURCE_DIR}/src/enet_encap
+  ${CMAKE_SOURCE_DIR}/src/ports/${OpEner_platform}
+  ${CMAKE_SOURCE_DIR}/src/ports/${OpEner_platform}/sample_application
+  )
 
-#######################################
-# Add common includes                 #
-#######################################
-opener_common_includes()
-
-#######################################
-# Add platform-specific includes      #
-#######################################
-opener_platform_support("INCLUDES")
+set( ENET_ENCAP_SRC
+  cpf.h
+  cpf.c
+  encap.h
+  encap.c
+  endianconv.h
+  endianconv.c
+  )
 
 add_library( ENET_ENCAP ${ENET_ENCAP_SRC} )

@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2009, Rockwell Automation, Inc.
- * All rights reserved. 
+ * All rights reserved.
  *
  ******************************************************************************/
 #ifndef TYPEDEFS_H_
@@ -22,21 +22,39 @@
  Do not use "char" for data buffers - use "unsigned char" instead. Using char
  for data buffers can occasionally blow up in your face rather nastily.
  */
-
-#define EIP_BYTE 	uint8_t
-#define EIP_INT8 	int8_t
-#define EIP_INT16	int16_t
-#define EIP_INT32	int32_t
-#define EIP_UINT8	uint8_t
-#define EIP_UINT16	uint16_t
-#define EIP_UINT32	uint32_t
-#define EIP_FLOAT	float
-#define EIP_DFLOAT	double
-#define EIP_BOOL8	int
+#ifdef USE_DEFINE_TYPES
+#define EIP_BYTE    uint8_t
+#define EIP_INT8    int8_t
+#define EIP_INT16   int16_t
+#define EIP_INT32   int32_t
+#define EIP_UINT8   uint8_t
+#define EIP_UINT16  uint16_t
+#define EIP_UINT32  uint32_t
+#define EIP_FLOAT   float
+#define EIP_DFLOAT  double
+#define EIP_BOOL8   int
 
 #ifdef OPENER_SUPPORT_64BIT_DATATYPES
-#define EIP_INT64       int64_t
-#define EIP_UINT64      uint64_t
+#define EIP_INT64   int64_t
+#define EIP_UINT64  uint64_t
+#endif
+
+#else
+typedef uint8_t     EIP_BYTE  ;
+typedef int8_t      EIP_INT8  ;
+typedef int16_t     EIP_INT16 ;
+typedef int32_t     EIP_INT32 ;
+typedef uint8_t     EIP_UINT8 ;
+typedef uint16_t    EIP_UINT16;
+typedef uint32_t    EIP_UINT32;
+typedef float       EIP_FLOAT ;
+typedef double      EIP_DFLOAT;
+typedef int         EIP_BOOL8 ;
+
+#ifdef OPENER_SUPPORT_64BIT_DATATYPES
+typedef int64_t     EIP_INT64;
+typedef uint64_t    EIP_UINT64;
+#endif
 #endif
 
 /*! Constant identifying if a socket descriptor is invalid
@@ -64,7 +82,9 @@
 
 typedef enum
 {
-  EIP_OK = 0, EIP_OK_SEND = 1, EIP_ERROR = -1
+  EIP_OK        = 0,
+  EIP_OK_SEND   = 1,
+  EIP_ERROR     = -1
 } EIP_STATUS;
 
 #ifndef __cplusplus
@@ -80,14 +100,14 @@ typedef enum
 
  example:
 
- typedef enum { A, B, C, FOO_PACKED_SIZE=ENUM_UINT16} PACKED FOO;		 this forces the field to be 16 bits long, even though the defined values could be contained in 8 bits
+ typedef enum { A, B, C, FOO_PACKED_SIZE=ENUM_UINT16} PACKED FOO;    this forces the field to be 16 bits long, even though the defined values could be contained in 8 bits
  the definition FOO_PACKED_SIZE is a dummy, but it forces the minimum size
  */
 /* TODO -- find some portable way of dealing with packed structs and typed enums */
 #ifdef __GNUC__
 #define PACKED __attribute__((packed))
 
-#define ENUM_INT8 0x7f
+#define ENUM_INT8   0x7f
 #define ENUM_INT16  0x7fff
 #define ENUM_INT32  0x7fffffff
 

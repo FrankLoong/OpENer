@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2009, Rockwell Automation, Inc.
- * All rights reserved. 
+ * All rights reserved.
  *
  ******************************************************************************/
 #ifndef CIPTCPIPINTERFACE_H_
@@ -17,7 +17,7 @@ typedef struct
   EIP_UINT8  m_unReserved; /*!< shall be zereo */
   EIP_UINT16 m_unNumMcast;
   EIP_UINT32 m_unMcastStartAddr;
-}SMcastConfig;
+} SMcastConfig;
 
 /* global public variables */
 extern EIP_UINT8 g_unTTLValue;
@@ -26,8 +26,8 @@ extern SMcastConfig g_stMultiCastconfig;
 
 
 /* public functions */
-/*!Initializing the data structures of the TCPIP interface object 
- */ 
+/*!Initializing the data structures of the TCPIP interface object
+ */
 EIP_STATUS CIP_TCPIP_Interface_Init(void);
 /*!\brief Clean up the allocated data of the TCPIP interface object.
  *

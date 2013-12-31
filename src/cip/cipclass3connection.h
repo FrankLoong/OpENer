@@ -20,7 +20,8 @@
  *    - On an error the general status code to be put into the response
  */
 int
-establishClass3Connection(struct CIP_ConnectionObject *pa_pstConnObj, EIP_UINT16 *pa_pnExtendedError);
+establishClass3Connection(struct CIP_ConnectionObject * pa_pstConnObj,
+                          EIP_UINT16 * pa_pnExtendedError);
 
 void initializeClass3ConnectionData();
 

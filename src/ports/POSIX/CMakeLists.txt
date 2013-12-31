@@ -1,21 +1,24 @@
 add_subdirectory(sample_application)
 
-set( PLATFORM_SPEC_SRC networkhandler.c)
+include_directories(
+  ${INTTYPES_DIR}
+  ${CMAKE_SOURCE_DIR}
+  ${CMAKE_SOURCE_DIR}/cip
+  ${CMAKE_SOURCE_DIR}/enet/encap
+  ${CMAKE_SOURCE_DIR}/ports
+  )
 
-#######################################
-# Add common includes                 #
-#######################################
-opener_common_includes()
+set( source_files
+  networkhandler.c
+  main.c
+  ./sampleapplication.c
+  )
 
-#######################################
-# Add platform-specific includes      #
-#######################################
-opener_platform_support("INCLUDES")
+add_executable(OpENer ${source_files})
 
-set (PLATFORMLIBNAME ${OpENer_PLATFORM}PLATFORM)
-
-add_library( PLATFORMLIBNAME ${PLATFORM_SPEC_SRC})
-
-add_executable(OpENer main.c)
-
-target_link_libraries( OpENer PLATFORMLIBNAME CIP SAMPLE_APP ENET_ENCAP ${PLATFORM_SPEC_LIBS} )
+target_link_libraries(
+  OpENer
+  CIP
+  ENET_ENCAP
+  ${PLATFORM_SPEC_LIBS}
+  )

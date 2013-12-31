@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2009, Rockwell Automation, Inc.
- * All rights reserved. 
+ * All rights reserved.
  *
  ******************************************************************************/
 #include <stdio.h>
@@ -31,19 +31,19 @@ int g_nEndStack = 0;
 
 /******************************************************************************/
 int
-main(int argc, char *arg[])
+main(int argc, char * arg[])
 {
   EIP_UINT8 acMyMACAddress[6];
   EIP_UINT16 nUniqueConnectionID;
 
-  if (argc != 12)
+  if(argc != 12)
     {
       printf("Wrong number of command line parameters!\n");
       printf("The correct command line parameters are:\n");
       printf(
-          "./opener ipaddress subnetmask gateway domainname hostaddress macaddress\n");
+        "./opener ipaddress subnetmask gateway domainname hostaddress macaddress\n");
       printf(
-          "    e.g. ./opener 192.168.0.2 255.255.255.0 192.168.0.1 test.com testdevice 00 15 C5 BF D0 87\n");
+        "    e.g. ./opener 192.168.0.2 255.255.255.0 192.168.0.1 test.com testdevice 00 15 C5 BF D0 87\n");
       exit(0);
     }
   else
@@ -74,7 +74,7 @@ main(int argc, char *arg[])
   CIP_Init(nUniqueConnectionID);
 
   /* Setup Network Handles */
-  if (EIP_OK == NetworkHandler_Init())
+  if(EIP_OK == NetworkHandler_Init())
     {
       g_nEndStack = 0;
 #ifndef WIN32
@@ -83,9 +83,9 @@ main(int argc, char *arg[])
 #endif
 
       /* The event loop. Put other processing you need done continually in here */
-      while (1 != g_nEndStack)
+      while(1 != g_nEndStack)
         {
-          if( EIP_OK != NetworkHandler_ProcessOnce())
+          if(EIP_OK != NetworkHandler_ProcessOnce())
             {
               break;
             }

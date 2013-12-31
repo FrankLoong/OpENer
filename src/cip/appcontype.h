@@ -25,8 +25,8 @@ void initializeIOConnectionData();
  *        - on error: NULL
  */
 S_CIP_ConnectionObject *
-getIOConnectionForConnectionData(S_CIP_ConnectionObject *pa_pstConnData,
-    EIP_UINT16 *pa_pnExtendedError);
+getIOConnectionForConnectionData(S_CIP_ConnectionObject * pa_pstConnData,
+                                 EIP_UINT16 * pa_pnExtendedError);
 
 /*! \brief Check if there exists already an exclusive owner or listen only connection
  *         which produces the input assembly.
@@ -56,7 +56,7 @@ getNextNonCtrlMasterCon(EIP_UINT32 pa_unInputPoint);
  */
 void
 closeAllConnsForInputWithSameType(EIP_UINT32 pa_unInputPoint,
-    EConnType pa_eInstanceType);
+                                  EConnType pa_eInstanceType);
 
 
 /*!\brief close all open connections.

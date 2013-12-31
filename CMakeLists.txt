@@ -3,28 +3,29 @@
 #######################################
 cmake_minimum_required( VERSION 2.8.9 )
 
+set( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake )
+set( CMAKE_USER_MAKE_RULES_OVERRIDE ${CMAKE_MODULE_PATH}/c_flag_overrides.cmake)
+
 #######################################
 # Project name                        #
 #######################################
 project( OpENer C )
 
 #######################################
-# Project version                     #
+# Project version                     # 
 #######################################
 set( OpENer_VERSION_MAJOR 1 )
 set( OpENer_VERSION_MINOR 2 )
 
-find_path( OpENer_BUILDSUPPORT_DIR OpENer.cmake ${PROJECT_SOURCE_DIR}/../buildsupport)
- 
-INCLUDE( ${OpENer_BUILDSUPPORT_DIR}/OpENer.cmake)
+find_path( INTTYPES_DIR inttypes.h ${PROJECT_SOURCE_DIR}/contrib/msinttypes)
 
-#######################################
-# Platform switches                   #
-#######################################
-set( OpENer_KNOWN_PLATFORMS "POSIX" "WIN32" )
-
-set( OpENer_PLATFORM CACHE STRINGS "Platform OpENer will be built for" )
-set_property(CACHE OpENer_PLATFORM PROPERTY STRINGS ${OpENer_KNOWN_PLATFORMS} )
+if( WIN32 )
+  set( OpEner_platform "WIN32" )
+elseif( UNIX ) # UNIX or UNIX like (i.e. APPLE and CYGWIN)
+  set( OpEner_platform "POSIX" )
+else()
+  set( OpEner_platform )
+endif()
 
 #######################################
 # OpENer tracer switches              #
@@ -55,29 +56,10 @@ if(OpENer_TRACES)
   
 endif(OpENer_TRACES)
 
-set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -w -Wall" )
-
-#######################################
-# Add custom CIP objects              #
-#######################################
-set( OpENer_CIP_OBJECTS_DIR ${PROJECT_SOURCE_DIR}/cip_objects )
-include(${OpENer_BUILDSUPPORT_DIR}/OpENer_CIP_Object_generator.cmake)
-
 #######################################
 # Add subdirectories                  #
 #######################################
-add_subdirectory(cip)
-add_subdirectory(cip_objects)
-add_subdirectory(enet_encap)
-add_subdirectory(ports)
-
-#######################################
-# Add common includes                 #
-#######################################
-opener_common_includes()
-
-#######################################
-# Add platfrom specific things        #
-#######################################
-
-opener_platform_support("INCLUDES")
+add_subdirectory(src/cip)
+#add_subdirectory(src/cip_objects)
+add_subdirectory(src/enet_encap)
+add_subdirectory(src/ports)

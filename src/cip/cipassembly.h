@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2009, Rockwell Automation, Inc.
- * All rights reserved. 
+ * All rights reserved.
  *
  ******************************************************************************/
 #ifndef CIPASSEMBLY_H_
@@ -14,7 +14,7 @@
 /* public functions */
 
 /*! Setup the Assembly object
- * 
+ *
  * Creates the Assembly Class with zero instances and sets up all services.
  */
 EIP_STATUS CIP_Assembly_Init(void);
@@ -29,18 +29,19 @@ EIP_STATUS CIP_Assembly_Init(void);
 void shutdownAssemblies(void);
 
 /*! notify an Assembly object that data has been received for it.
- * 
+ *
  *  The data will be copied into the assembly objects attribute 3 and
  *  the application will be informed with the IApp_after_assembly_data_received function.
- *  
+ *
  *  @param pa_pstInstance the assembly object instance for which the data was received
  *  @param pa_pnData pointer to the data received
  *  @param pa_nDatalength number of bytes received
- *  @return 
+ *  @return
  *     - EIP_OK the received data was okay
  *     - EIP_ERROR the received data was wrong
- */ 
-EIP_STATUS notifyAssemblyConnectedDataReceived(S_CIP_Instance *pa_pstInstance,
-    EIP_UINT8 *pa_pnData, EIP_UINT16 pa_nDatalength);
+ */
+EIP_STATUS notifyAssemblyConnectedDataReceived(S_CIP_Instance * pa_pstInstance,
+                                               EIP_UINT8 * pa_pnData,
+                                               EIP_UINT16 pa_nDatalength);
 
 #endif /*CIPASSEMBLY_H_*/

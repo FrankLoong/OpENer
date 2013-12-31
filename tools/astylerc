@@ -1,0 +1,347 @@
+#
+# 1. Copy this file to "%USERPROFILE%\astylerc" on windows
+# Usage: Astyle --options=astylerc
+#
+
+#-------------------------------------------------------------------------------
+# Bracket Style Options
+#-------------------------------------------------------------------------------
+# Allman style formatting/indenting uses broken brackets.
+# default bracket style    style=allman    style=java    style=kr
+# style=stroustrup    style=whitesmith    style=banner    style=gnu
+# style=linux    style=horstmann    style=1tbs    style=pico    style=lisp
+--style=gnu
+
+#-------------------------------------------------------------------------------
+# Tab Options
+#-------------------------------------------------------------------------------
+# default indent    
+# indent=spaces    indent=tab    indent=force-tab --indent=force-tab-x   
+
+# Indent using spaces per indent
+--indent=spaces=2
+
+#-------------------------------------------------------------------------------
+# Bracket Modify Options
+#-------------------------------------------------------------------------------
+
+# Attach brackets to a namespace statement. This is done regardless of the bracket style being used.
+#--attach-namespaces
+
+# Attach brackets to a class statement. This is done regardless of the bracket style being used.
+#--attach-classes
+
+# Attach brackets to class and struct inline function definitions.
+# This is not done for run-in type brackets (Horstmann and Pico styles).
+# This option is effective for C++ files only.
+#--attach-inlines
+
+# Attach brackets to a bracketed extern "C" statement
+#--attach-extern-c 
+
+#-------------------------------------------------------------------------------
+# Indentation Options
+#-------------------------------------------------------------------------------
+# Indent 'class' and 'struct' blocks so that the blocks 'public:', 'protected:'
+# and 'private:' are indented. The struct blocks are indented only if an access
+# modifier is # declared somewhere in the struct. The entire block is indented.
+# This option is effective for C++ files only.
+# --indent-classes
+
+# Indent 'class' and 'struct' access modifiers, 'public:', 'protected:' 
+# and 'private:', one half indent. The rest of the class is not indented. 
+# This option is effective for C++ files only. If used with indent?classes this option will be ignored.
+#--indent-modifiers
+
+# Indent 'switch' blocks so that the 'case X:' statements are indented in the 
+# switch block. The entire case block is indented.
+# --indent-switches
+
+# Indent 'case X:' blocks from the 'case X:' headers. 
+# Case statements not enclosed in blocks are NOT indented.
+--indent-cases 
+
+# Add extra indentation to namespace blocks. This option has no effect on Java files.
+# --indent-namespaces   
+
+# Add extra indentation to labels so they appear 1 indent less than the current
+# indentation, rather than being flushed to the left (the default).
+# --indent-labels
+
+# Indent multi-line preprocessor definitions ending with a backslash.
+# Should be used with --convert-tabs for proper results. Does a pretty good job,
+# but cannot perform miracles in obfuscated preprocessor definitions. Without
+# this option the preprocessor statements remain unchanged.
+# --indent-preproc-define
+#--indent-preprocessor ( will be removed )
+
+# Indent preprocessor conditional statements to the same level as the source code.
+#--indent-preproc-cond
+
+# Indent C++ comments beginning in column one.
+# By default C++ comments beginning in column one are not indented. 
+# This option will allow the comments to be indented with the code.
+#--indent-col1-comments    
+
+# Set the minimal indent that is added when a header is built of multiple lines.
+# This indent helps to easily separate the header from the command statements 
+# that follow. The value for # indicates a number of indents and is a minimum value. 
+# The indent may be greater to align with the data on the previous line.
+# The valid values are:
+# 0 - no minimal indent. The lines will be aligned with the paren on the preceding line.
+# 1 - indent at least one additional indent.
+# 2 - indent at least two additional indents.
+# 3  - indent at least one-half an additional indent. This is intended for large indents (e.g. 8).
+# The default value is 2, two additional indents.
+--min-conditional-indent=0
+
+# Set the  maximum of # spaces to indent a continuation line.
+# The # indicates a number of columns and must not be greater than 120.
+# If no # is set, the default value of 40 will be used.
+# A maximum of less than two indent lengths will be ignored.
+# This option will prevent continuation lines from extending too far to the right.
+# Setting a larger value will allow the code to be extended further to the right.
+--max-instatement-indent=120
+
+#-------------------------------------------------------------------------------
+# Padding Options
+#-------------------------------------------------------------------------------
+
+# Pad empty lines around header blocks (e.g. 'if', 'for', 'while'...).
+#--break-blocks
+
+# Pad empty lines around header blocks (e.g. 'if', 'for', 'while'...).
+# Treat closing header blocks (e.g. 'else', 'catch') as stand-alone blocks.
+#--break-blocks=all
+
+# Insert space padding around operators.
+# Any end of line comments will remain in the original column, if possible.
+# Note that there is no option to unpad. Once padded, they stay padded.
+#--pad-oper
+
+# Insert space padding around parenthesis on both the outside and the inside. 
+# Any end of line comments will remain in the original column, if possible.
+#--pad-paren
+
+# Insert space padding around parenthesis on the outside only.
+# Any end of line comments will remain in the original column, if possible.
+# This can be used with unpad-paren below to remove unwanted spaces.
+#--pad-paren-out
+
+# Insert space padding around the first parenthesis in a series on the outside only.
+# Any end of line comments will remain in the original column, if possible.
+# This can be used with unpad-paren below to remove unwanted spaces.
+# If used with pad-paren or pad-paren-out, this option will be ignored.
+# If used with pad-paren-in, the result will be the same as pad-paren.
+#--pad-first-paren-out
+
+# Insert space padding around parenthesis on the inside only.
+# Any end of line comments will remain in the original column, if possible.
+# This can be used with unpad-paren below to remove unwanted spaces.
+#--pad-paren-in
+
+# Insert space padding after paren headers only (e.g. 'if', 'for', 'while'...).
+# Any end of line comments will remain in the original column, if possible.
+# This can be used with unpad-paren to remove unwanted spaces.
+#--pad-header
+
+# Remove extra space padding around parenthesis on the inside and outside.
+# Any end of line comments will remain in the original column, if possible.
+# This option can be used in combination with the paren padding options pad-paren
+# pad-paren-out, pad-paren-in, and pad-header above. 
+# Only padding that has not been requested by other options will be removed.
+--unpad-paren
+
+# Delete empty lines within a function or method.
+# Empty lines outside of functions or methods are NOT deleted. 
+# If used with break-blocks or break-blocks=all it will delete all lines EXCEPT
+# the lines added by the break-blocks options.
+#--delete-empty-lines
+
+# Fill empty lines with the white space of the previous line.
+#--fill-empty-lines
+
+# Attach a pointer or reference operator (* or &) to either the variable
+# type (left) or variable name (right), or place it between the type and
+# name (middle).
+# type, middle, name
+--align-pointer=middle
+
+# This option will align references separate from pointers.
+# none, type, middle, name
+--align-reference=middle
+
+#-------------------------------------------------------------------------------
+# Formatting Options
+#-------------------------------------------------------------------------------
+
+# When used with --brackets=attach, --brackets=linux, or --brackets=stroustrup, 
+# this breaks closing headers (e.g. 'else', 'catch', ...) from their immediately 
+# preceding closing brackets. Closing header brackets are always broken with 
+# broken brackets, horstmann brackets, indented blocks, and indented brackets.
+# --break-closing-brackets
+
+# Break "else if" header combinations into separate lines. This option has no 
+# effect if keep-one-line-statements is used, the "else if" statements will 
+# remain as they are.
+# --break-elseifs
+
+# Add brackets to unbracketed one line conditional statements (e.g. 'if',
+# 'for', 'while'...).
+#--add-brackets
+
+# Add one line brackets to unbracketed one line conditional statements
+# (e.g. 'if', 'for', 'while'...). The statement must be on a single line.
+# The option implies #--keep-one-line-blocks and will not break the one line blocks.
+#--add-one-line-brackets
+
+# Remove brackets from conditional statements (e.g. 'if', 'for', 'while'...).
+# The statement must be a single statement on a single line.
+# If --add-brackets or --add-one-line-brackets is also used the result will be to add brackets.
+# Brackets will not be removed from "One True Brace Style", --style=1tbs.
+#--remove-brackets
+
+# Don't break one-line blocks.
+#--keep-one-line-blocks
+
+# Don't break complex statements and multiple statements residing on a single line.
+#--keep-one-line-statements
+
+# Converts tabs into spaces in the non-indentation part of the line.
+--convert-tabs
+
+# Closes whitespace in the angle brackets of template definitions.
+# Closing the ending angle brackets is now allowed by the C++11 standard.
+# Be sure your compiler supports this before making the changes.
+#--close-templates
+
+# Remove the preceding '*' in a multi-line comment that begins a line.
+# A trailing '*', if present, is also removed. Text that is less than one
+# is indent is indented to one indent. Text greater than one indent is not changed.
+# Multi-line comments that begin a line but without the preceding '*' are indented 
+# to one indent for consistency. This can slightly modify the indentation of commented
+# out blocks of code. Lines containing all '*' are left unchanged. 
+# Extra spacing is removed from the comment close '*/'.
+#--remove-comment-prefix 
+
+# The option max?code?length will break a line if the code exceeds # characters.
+# The valid values are 50 thru 200. Lines without logical conditionals will break
+# on a logical conditional (||, &&, ...), comma, paren, semicolon, or space.
+
+# Some code will not be broken, such as comments, quotes, and arrays.
+# If used with keep?one?line?blocks or add-one-line-brackets the blocks will
+# NOT be broken. If used #with keep?one?line?statements the statements will be
+# broken at a semicolon if the line goes over the maximum length.
+# If there is no available break point within the max #code length, 
+# the line will be broken at the first available break point after the max code length.
+# --max-code-length=#
+
+#--break-after-logical
+
+# Indent a C/C++, C#, or Java file. The option is usually set from the file
+# extension for each file. You can override the setting with this entry.
+# It will be used for all files regardless of the file extension. It allows
+# the formatter to identify language specific syntax such as C++ classes,
+# templates, and keywords.
+# c/cs/java
+--mode=c
+
+#-------------------------------------------------------------------------------
+# Other Options
+#-------------------------------------------------------------------------------
+# Append the suffix #### instead of '.orig' to original filename (e.g. --suffix=.bak).
+# If this is to be a file extension, the dot '.' must be included. 
+# Otherwise the suffix will be appended to the current file extension.
+# --suffix=####
+
+# Do not retain a backup of the original file. The original file is purged
+# after it is formatted.
+--suffix=none
+
+# For each directory in the command line, process all subdirectories
+# recursively. Windows users should place the filepath and name in double
+# quotes if the path or name contains spaces.
+#--recursive
+
+# Specify a file or sub directory #### to be excluded from processing. 
+#--exclude=####
+
+# Allow processing to continue if there are errors in the "exclude=###" options.
+# This option lets the excludes for several projects be entered in a single option file.
+# This option may be placed in the same option file as the excludes.
+# It will display the unmatched excludes. The following option will not display
+# the unmatched excludes
+# ignore-exclude-errors
+
+# Allow processing to continue if there are errors in the "exclude=###" options.
+# This option lets the excludes for several projects be entered in a single option file. 
+# This option may be placed in the same option file as the excludes. 
+# It will NOT # display the unmatched excludes. The preceding option will display
+# the unmatched excludes.
+# ignore-exclude-errors-x 
+
+
+# Print errors to standard-output rather than to standard-error. 
+# This option should be helpful for systems/shells that do not have this option,
+# such as in Windows95.
+# --errors-to-stdout
+# / -X
+
+# Preserve the original file's date and time modified. The date and time modified
+# will not be changed in the formatted file. This option is not effective 
+# if redirection # is used to rename the input file.
+# --preserve-date
+# / -Z
+
+
+# Verbose display mode. Display optional information, such as release number and
+# statistical data.
+# Formatted files display mode. Display only the files that have been formatted.
+--verbose
+# / -v
+
+# Do not display files that are unchanged.
+#--formatted
+# / -Q
+
+# Quiet display mode. Suppress all output except error messages.
+--quiet
+# / -q
+
+# Force use of the specified line end style. Valid options are windows (CRLF),
+# linux (LF), and macold (CR). MacOld style is the format for OS 9 and earlier.
+# Mac OS X uses the Linux style. If one of these options is not used the line 
+# ends will be determined automatically from the input file. When redirection
+# is used on Windows the output will always have Windows line ends.
+# This option will be ignored. 
+--lineend=windows
+#--lineend=linux
+#--lineend=macold
+
+#-------------------------------------------------------------------------------
+# Command Line Only
+#
+# These options are available for the command-line only. They are NOT available
+# in an options file.
+#-------------------------------------------------------------------------------
+
+# Specify an options file #### to read and use. It must contain a file path for
+# the file. This will allow the file name to be changed from astylerc or .astylerc.
+#--options=####
+
+# Disable the default options file. Only the command-line parameters will be used.
+#--options=none
+
+# The displayed output will be ascii characters only. The text will be displayed 
+# in English and numbers will not be formatted. The short option must be by itself,
+# it cannot be concatenated with other options.
+#--ascii / -I
+
+# Print version number and quit. The short option must be by itself, 
+# it cannot be concatenated with other options.
+#--version / -V
+
+# Print a help message and quit. The short option must be by itself,
+# it cannot be concatenated with other options.
+#--help / -h / -?
+

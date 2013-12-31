@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2009, Rockwell Automation, Inc.
- * All rights reserved. 
+ * All rights reserved.
  *
  ******************************************************************************/
 #ifndef CIPCONNECTIONMANAGER_H_
@@ -19,30 +19,30 @@
 
 
 /* Connection Manager Error codes */
-#define CIP_CON_MGR_SUCCESS 0x00
-#define CIP_CON_MGR_ERROR_CONNECTION_IN_USE 0x0100
-#define CIP_CON_MGR_ERROR_TRANSPORT_TRIGGER_NOT_SUPPORTED 0x0103
-#define CIP_CON_MGR_ERROR_OWNERSHIP_CONFLICT 0x0106
-#define CIP_CON_MGR_ERROR_CONNECTION_NOT_FOUND_AT_TARGET_APPLICATION 0x0107
-#define CIP_CON_MGR_ERROR_INVALID_CONNECTION_TYPE 0x0108 /* TODO: deprecated CIP Vol1 edition 3.12, page 3-82 */
-#define CIP_CON_MGR_ERROR_INVALID_CONNECTION_SIZE 0x0109 /* TODO: deprecated CIP Vol1 edition 3.12, page 3-82 */
-#define CIP_CON_MGR_ERROR_NO_MORE_CONNECTIONS_AVAILABLE 0x0113
-#define CIP_CON_MGR_ERROR_VENDERID_OR_PRODUCTCODE_ERROR 0x0114
-#define CIP_CON_MGR_ERROR_VENDERID_OR_PRODUCT_TYPE_ERROR 0x0115
-#define CIP_CON_MGR_ERROR_REVISION_MISMATCH 0x0116
-#define CIP_CON_MGR_INVALID_CONFIGURATION_APP_PATH      0x0129
-#define CIP_CON_MGR_INVALID_CONSUMING_APPLICATION_PATH  0x012A
-#define CIP_CON_MGR_INVALID_PRODUCING_APPLICATION_PATH  0x012B
-#define CIP_CON_MGR_INCONSISTENT_APPLICATION_PATH_COMBO 0x012F
-#define CIP_CON_MGR_NON_LISTEN_ONLY_CONNECTION_NOT_OPENED 0x0119
-#define CIP_CON_MGR_ERROR_PARAMETER_ERROR_IN_UNCONNECTED_SEND_SERVICE 0x0205
-#define CIP_CON_MGR_ERROR_INVALID_SEGMENT_TYPE_IN_PATH 0x0315
-#define CIP_CON_MGR_TARGET_OBJECT_OUT_OF_CONNECTIONS 0x011A
+#define CIP_CON_MGR_SUCCESS                                             0x0000
+#define CIP_CON_MGR_ERROR_CONNECTION_IN_USE                             0x0100
+#define CIP_CON_MGR_ERROR_TRANSPORT_TRIGGER_NOT_SUPPORTED               0x0103
+#define CIP_CON_MGR_ERROR_OWNERSHIP_CONFLICT                            0x0106
+#define CIP_CON_MGR_ERROR_CONNECTION_NOT_FOUND_AT_TARGET_APPLICATION    0x0107
+#define CIP_CON_MGR_ERROR_INVALID_CONNECTION_TYPE                       0x0108 /* TODO: deprecated CIP Vol1 edition 3.12, page 3-82 */
+#define CIP_CON_MGR_ERROR_INVALID_CONNECTION_SIZE                       0x0109 /* TODO: deprecated CIP Vol1 edition 3.12, page 3-82 */
+#define CIP_CON_MGR_ERROR_NO_MORE_CONNECTIONS_AVAILABLE                 0x0113
+#define CIP_CON_MGR_ERROR_VENDERID_OR_PRODUCTCODE_ERROR                 0x0114
+#define CIP_CON_MGR_ERROR_VENDERID_OR_PRODUCT_TYPE_ERROR                0x0115
+#define CIP_CON_MGR_ERROR_REVISION_MISMATCH                             0x0116
+#define CIP_CON_MGR_INVALID_CONFIGURATION_APP_PATH                      0x0129
+#define CIP_CON_MGR_INVALID_CONSUMING_APPLICATION_PATH                  0x012A
+#define CIP_CON_MGR_INVALID_PRODUCING_APPLICATION_PATH                  0x012B
+#define CIP_CON_MGR_INCONSISTENT_APPLICATION_PATH_COMBO                 0x012F
+#define CIP_CON_MGR_NON_LISTEN_ONLY_CONNECTION_NOT_OPENED               0x0119
+#define CIP_CON_MGR_ERROR_PARAMETER_ERROR_IN_UNCONNECTED_SEND_SERVICE   0x0205
+#define CIP_CON_MGR_ERROR_INVALID_SEGMENT_TYPE_IN_PATH                  0x0315
+#define CIP_CON_MGR_TARGET_OBJECT_OUT_OF_CONNECTIONS                    0x011A
 
-#define CIP_CONN_PRODUCTION_TRIGGER_MASK 0x70
-#define CIP_CONN_CYCLIC_CONNECTION       0x0
-#define CIP_CONN_COS_TRIGGERED_CONNECTION 0x10
-#define CIP_CONN_APLICATION_TRIGGERED_CONNECTION 0x20
+#define CIP_CONN_PRODUCTION_TRIGGER_MASK            0x70
+#define CIP_CONN_CYCLIC_CONNECTION                  0x0
+#define CIP_CONN_COS_TRIGGERED_CONNECTION           0x10
+#define CIP_CONN_APLICATION_TRIGGERED_CONNECTION    0x20
 
 /*macros for comparing sequence numbers according to CIP spec vol 2 3-4.2*/
 #define SEQ_LEQ32(a, b) ((int)((a) - (b)) <= 0)
@@ -56,12 +56,12 @@
 /*! States of a connection */
 typedef enum
 {
-  CONN_STATE_NONEXISTENT = 0,
-  CONN_STATE_CONFIGURING = 1,
+  CONN_STATE_NONEXISTENT            = 0,
+  CONN_STATE_CONFIGURING            = 1,
   CONN_STATE_WAITINGFORCONNECTIONID = 2 /* only used in DeviceNet*/,
-  CONN_STATE_ESTABLISHED = 3,
-  CONN_STATE_TIMEDOUT = 4,
-  CONN_STATE_DEFERREDDELETE = 5 /* only used in DeviceNet */,
+  CONN_STATE_ESTABLISHED            = 3,
+  CONN_STATE_TIMEDOUT               = 4,
+  CONN_STATE_DEFERREDDELETE         = 5 /* only used in DeviceNet */,
   CONN_STATE_CLOSING
 } CONN_STATE;
 
@@ -78,18 +78,17 @@ typedef enum
 typedef enum
 {
   enWatchdogTransitionToTimedOut = 0, /*!< , invalid for explicit message connections */
-  enWatchdogAutoDelete = 1, /*!< Default for explicit message connections, default for I/O connections on EIP*/
-  enWatchdogAutoReset = 2, /*!< Invalid for explicit message connections */
-  enWatchdogDeferredDelete = 3
-/*!< Only valid for DeviceNet, invalid for I/O connections */
+  enWatchdogAutoDelete           = 1, /*!< Default for explicit message connections, default for I/O connections on EIP*/
+  enWatchdogAutoReset            = 2, /*!< Invalid for explicit message connections */
+  enWatchdogDeferredDelete       = 3  /*!< Only valid for DeviceNet, invalid for I/O connections */
 } EWatchdogTimeOutAction;
 
 typedef struct
 {
   CONN_STATE state;
   EIP_UINT16 ConnectionID;
-/*TODO think if this is needed anymore
- TCMReceiveDataFunc m_ptfuncReceiveData; */
+  /*TODO think if this is needed anymore
+   TCMReceiveDataFunc m_ptfuncReceiveData; */
 } S_Link_Consumer;
 
 typedef struct
@@ -152,10 +151,10 @@ typedef struct CIP_ConnectionObject
   S_CIP_ConnectionPath ConnectionPath; /* padded EPATH*/
   S_Link_Object stLinkObject;
 
-  S_CIP_Instance *p_stConsumingInstance;
+  S_CIP_Instance * p_stConsumingInstance;
   /*S_CIP_CM_Object *p_stConsumingCMObject; */
 
-  S_CIP_Instance *p_stProducingInstance;
+  S_CIP_Instance * p_stProducingInstance;
   /*S_CIP_CM_Object *p_stProducingCMObject; */
 
   EIP_UINT32 EIPSequenceCountProducing; /* the EIP level sequence Count for Class 0/1 Producing Connections may have a different value than SequenceCountProducing*/
@@ -188,8 +187,8 @@ typedef struct CIP_ConnectionObject
   TConnRecvDataFunc m_pfReceiveDataFunc;
 
   /* pointers to be used in the active connection list */
-  struct CIP_ConnectionObject *m_pstNext;
-  struct CIP_ConnectionObject *m_pstFirst;
+  struct CIP_ConnectionObject * m_pstNext;
+  struct CIP_ConnectionObject * m_pstFirst;
 } S_CIP_ConnectionObject;
 
 #define CIP_CONNECTION_MANAGER_CLASS_CODE 0x06
@@ -223,8 +222,8 @@ getConnectedOutputAssembly(EIP_UINT32 pa_unOutputAssemblyId);
 /*! Copy the given connection data from pa_pstSrc to pa_pstDst
  */
 void
-copyConnectionData(S_CIP_ConnectionObject *pa_pstDst,
-    S_CIP_ConnectionObject *pa_pstSrc);
+copyConnectionData(S_CIP_ConnectionObject * pa_pstDst,
+                   S_CIP_ConnectionObject * pa_pstSrc);
 
 /** \brief Close the given connection
  *
@@ -232,7 +231,7 @@ copyConnectionData(S_CIP_ConnectionObject *pa_pstDst,
  * @param pa_pstConnObj pointer to the connection object structure to be closed
  */
 void
-closeConnection(S_CIP_ConnectionObject *pa_pstConnObj);
+closeConnection(S_CIP_ConnectionObject * pa_pstConnObj);
 
 EIP_BOOL8 isConnectedOutputAssembly(EIP_UINT32 pa_nInstanceNr);
 
@@ -242,7 +241,7 @@ EIP_BOOL8 isConnectedOutputAssembly(EIP_UINT32 pa_nInstanceNr);
  * @param pa_pstConnObj pointer to the connection object that should be set up.
  */
 void
-generalConnectionConfiguration(S_CIP_ConnectionObject *pa_pstConnObj);
+generalConnectionConfiguration(S_CIP_ConnectionObject * pa_pstConnObj);
 
 
 /** \brief Insert the given connection object to the list of currently active and managed connections.
@@ -253,10 +252,10 @@ generalConnectionConfiguration(S_CIP_ConnectionObject *pa_pstConnObj);
  * @param pa_pstConn pointer to the connection object to be added.
  */
 void
-addNewActiveConnection(S_CIP_ConnectionObject *pa_pstConn);
+addNewActiveConnection(S_CIP_ConnectionObject * pa_pstConn);
 
 void
-removeFromActiveConnections(S_CIP_ConnectionObject *pa_pstConn);
+removeFromActiveConnections(S_CIP_ConnectionObject * pa_pstConn);
 
 #endif /*CIPCONNECTIONMANAGER_H_*/
 

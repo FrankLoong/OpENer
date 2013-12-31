@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2009, Rockwell Automation, Inc.
- * All rights reserved. 
+ * All rights reserved.
  *
  ******************************************************************************/
 #ifndef CIPIDENTITY_H_
@@ -9,14 +9,14 @@
 #include "typedefs.h"
 #include "ciptypes.h"
 
-#define CIP_IDENTITY_CLASS_CODE 0x01
+#define CIP_IDENTITY_CLASS_CODE         0x01
 
-#define CIP_IDENTITY_STATUS_OWNED 0x0001
-#define CIP_IDENTITY_STATUS_CONFIGURED 0x0004
-#define CIP_IDENTITY_STATUS_MINOR_RECOV_FLT 0x0100
-#define CIP_IDENTITY_STATUS_MINOR_UNRECOV_FLT 0x0200
-#define CIP_IDENTITY_STATUS_MAJOR_RECOV_FLT 0x0400
-#define CIP_IDENTITY_STATUS_MAJOR_UNRECOV_FLT 0x0800
+#define CIP_IDENTITY_STATUS_OWNED               0x0001
+#define CIP_IDENTITY_STATUS_CONFIGURED          0x0004
+#define CIP_IDENTITY_STATUS_MINOR_RECOV_FLT     0x0100
+#define CIP_IDENTITY_STATUS_MINOR_UNRECOV_FLT   0x0200
+#define CIP_IDENTITY_STATUS_MAJOR_RECOV_FLT     0x0400
+#define CIP_IDENTITY_STATUS_MAJOR_UNRECOV_FLT   0x0800
 
 #define CIP_IDENTITY_EXTENDED_STATUS_SELFTESTING_UNKNOWN                                     0x0000
 #define CIP_IDENTITY_EXTENDED_STATUS_FIRMEWARE_UPDATE_IN_PROGRESS                            0x0010
